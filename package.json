@@ -1,0 +1,15 @@
+{
+  "name": "auth-services",
+  "version": "1.0.0",
+  "description": "auth service for mern space",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Archit",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^24.0.1",
+    "typescript": "^5.8.3"
+  }
+}
