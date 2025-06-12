@@ -4,12 +4,16 @@
   "description": "auth service for mern space",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node src/server.ts",
+    "format:fix": "prettier . --write ",
+    "format:check": "prettier . --check"
   },
   "author": "Archit",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^24.0.1",
+    "prettier": "3.5.3",
     "typescript": "^5.8.3"
   }
 }
