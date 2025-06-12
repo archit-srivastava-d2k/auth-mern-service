@@ -3,17 +3,23 @@
   "version": "1.0.0",
   "description": "auth service for mern space",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node src/server.ts",
     "format:fix": "prettier . --write ",
-    "format:check": "prettier . --check"
+    "format:check": "prettier .",
+    "link": "eslint . check",
+    "link:fix": "eslint . --fix"
   },
   "author": "Archit",
   "license": "ISC",
   "devDependencies": {
+    "@eslint/js": "^9.28.0",
     "@types/node": "^24.0.1",
+    "eslint": "^9.28.0",
     "prettier": "3.5.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.34.0"
   }
 }
