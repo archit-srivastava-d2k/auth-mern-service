@@ -1,5 +1,2 @@
 console.log("Starting server...");
-
-function startServer() {
-  console.log("Server started successfully.");
-}
+import { createServer } from "http";
