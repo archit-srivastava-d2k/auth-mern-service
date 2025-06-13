@@ -1,2 +1,3 @@
-console.log("Starting server...");
-import { createServer } from "http";
+import { serverConfig } from "./config";
+
+console.log("Starting server...", serverConfig.PORT);
