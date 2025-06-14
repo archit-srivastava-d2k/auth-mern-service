@@ -1,3 +1,6 @@
 import { serverConfig } from "./config";
-
-console.log("Starting server...", serverConfig.PORT);
+import logger from "./config/logger";
+logger.error("This is a warning message", {
+  additionalInfo: "This is some additional info",
+});
+logger.info("Starting server...", { port: serverConfig.PORT });
