@@ -12,5 +12,18 @@ describe("POST auth/register", () => {
       const response = await request(app).post("/auth/register").send(UserData);
       expect(response.status).toBe(201);
     });
+
+    it("should return valid JSON", async () => {
+      const UserData = {
+        firstName: "Test",
+        lastName: "User",
+        email: "test@example.com",
+        password: "password",
+      };
+      const response = await request(app).post("/auth/register").send(UserData);
+      expect(response.type).toBe("application/json");
+    });
+
+    it("should persist the user in the database", async () => {});
   });
 });
