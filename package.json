@@ -1,53 +1,56 @@
 {
-  "name": "auth-services",
-  "version": "1.0.0",
-  "description": "auth service for mern space",
-  "main": "index.js",
-  "scripts": {
-    "test": "jest --watch --runInBand",
-    "dev": "nodemon src/server.ts",
-    "format:fix": "prettier . --write ",
-    "format:check": "prettier .",
-    "lint": "eslint . --check",
-    "lint:fix": "eslint . --fix",
-    "prepare": "husky"
-  },
-  "lint-staged": {
-    "*.ts": [
-      "npm run lint:fix",
-      "npm run format:fix"
-    ]
-  },
-  "author": "Archit",
-  "license": "ISC",
-  "devDependencies": {
-    "@eslint/js": "^9.28.0",
-    "@tsconfig/node16": "^16.1.4",
-    "@types/express": "^5.0.3",
-    "@types/http-errors": "^2.0.5",
-    "@types/jest": "^29.5.14",
-    "@types/node": "^24.0.1",
-    "@types/supertest": "^6.0.3",
-    "@types/winston": "^2.4.4",
-    "eslint": "^9.28.0",
-    "husky": "^9.1.7",
-    "jest": "^30.0.0",
-    "lint-staged": "^16.1.0",
-    "nodemon": "^3.1.10",
-    "prettier": "3.5.3",
-    "supertest": "^7.1.1",
-    "ts-jest": "^29.4.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.34.0"
-  },
-  "dependencies": {
-    "dotenv": "^16.5.0",
-    "express": "^5.1.0",
-    "http-errors": "^2.0.0",
-    "pg": "^8.16.0",
-    "reflect-metadata": "^0.2.2",
-    "typeorm": "^0.3.24",
-    "winston": "^3.17.0"
-  }
+   "name": "auth-services",
+   "version": "1.0.0",
+   "description": "auth service for mern space",
+   "main": "index.js",
+   "scripts": {
+      "test": "jest --watch --runInBand",
+      "dev": "cross-env NODE_ENV=dev nodemon src/server.ts",
+      "format:fix": "prettier . --write ",
+      "format:check": "prettier .",
+      "lint": "eslint . --check",
+      "lint:fix": "eslint . --fix",
+      "prepare": "husky",
+      "start": "ts-node src/index.ts",
+      "typeorm": "typeorm-ts-node-commonjs"
+   },
+   "lint-staged": {
+      "*.ts": [
+         "npm run lint:fix",
+         "npm run format:fix"
+      ]
+   },
+   "author": "Archit",
+   "license": "ISC",
+   "devDependencies": {
+      "@eslint/js": "^9.28.0",
+      "@tsconfig/node16": "^16.1.4",
+      "@types/express": "^5.0.3",
+      "@types/http-errors": "^2.0.5",
+      "@types/jest": "^29.5.14",
+      "@types/node": "^24.0.1",
+      "@types/supertest": "^6.0.3",
+      "@types/winston": "^2.4.4",
+      "cross-env": "^7.0.3",
+      "eslint": "^9.28.0",
+      "husky": "^9.1.7",
+      "jest": "^30.0.0",
+      "lint-staged": "^16.1.0",
+      "nodemon": "^3.1.10",
+      "prettier": "3.5.3",
+      "supertest": "^7.1.1",
+      "ts-jest": "^29.4.0",
+      "ts-node": "^10.9.2",
+      "typescript": "^5.8.3",
+      "typescript-eslint": "^8.34.0"
+   },
+   "dependencies": {
+      "dotenv": "^16.5.0",
+      "express": "^5.1.0",
+      "http-errors": "^2.0.0",
+      "pg": "^8.14.1",
+      "reflect-metadata": "^0.2.2",
+      "typeorm": "0.3.24",
+      "winston": "^3.17.0"
+   }
 }
