@@ -58,5 +58,26 @@ describe("POST auth/register", () => {
       expect(user[0].email).toBe(UserData.email.trim().toLowerCase());
       expect(user[0].password).toBe(UserData.password);
     });
+
+    it("should return the user ID in the response", async () => {
+      const UserData = {
+        firstName: "Test",
+        lastName: "User",
+        email: "  test@example.com",
+        password: "password",
+      };
+
+      const response = await request(app)
+        .post("/auth/register")
+        .send(UserData)
+        .expect(201);
+
+      expect(response.body).toHaveProperty(
+        "message",
+        "User registered successfully",
+      );
+      expect(response.body).toHaveProperty("userId");
+      expect(typeof response.body.userId).toBe("number");
+    });
   });
 });
