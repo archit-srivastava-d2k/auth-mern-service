@@ -4,7 +4,7 @@ import { User } from "../entity/User";
 import { Repository } from "typeorm";
 import createHttpError from "http-errors";
 import { Roles } from "../constants";
-
+import bcrypt from "bcrypt";
 export class UserService {
   constructor(private userRepository: Repository<User>) {}
 
@@ -16,6 +16,8 @@ export class UserService {
     // Default role is 'customer'
   }: userData): Promise<User> {
     // Hash the password for security
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Create and save the user
     try {
@@ -23,7 +25,7 @@ export class UserService {
         firstName,
         lastName,
         email: email.trim().toLowerCase(),
-        password: password,
+        password: hashedPassword,
         role: Roles.CUSTOMER, // In a real application, you should hash the password before saving
       });
       return user;

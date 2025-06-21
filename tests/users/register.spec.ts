@@ -3,7 +3,8 @@ import app from "../../src/app";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
 import { Roles } from "../../src/constants";
-
+import bcrypt from "bcrypt";
+import logger from "../../src/config/logger";
 describe("POST auth/register", () => {
   let connection: DataSource;
   beforeAll(async () => {
@@ -11,7 +12,6 @@ describe("POST auth/register", () => {
   });
 
   beforeEach(async () => {
-    // Clear the database before each test
     await connection.dropDatabase();
     await connection.synchronize();
   });
@@ -57,7 +57,6 @@ describe("POST auth/register", () => {
       expect(user[0].firstName).toBe(UserData.firstName);
       expect(user[0].lastName).toBe(UserData.lastName);
       expect(user[0].email).toBe(UserData.email.trim().toLowerCase());
-      expect(user[0].password).toBe(UserData.password);
     });
 
     it("should return the user ID in the response", async () => {
@@ -93,6 +92,28 @@ describe("POST auth/register", () => {
       const user = await userRePOsitory.find();
       expect(user[0]).toHaveProperty("role");
       expect(user[0].role).toBe(Roles.CUSTOMER);
+    });
+
+    it("should store the password as hashed in the database", async () => {
+      const userData = {
+        firstName: "Test",
+        lastName: "User",
+        email: "test@example.com",
+        password: "password",
+      };
+
+      await request(app).post("/auth/register").send(userData);
+
+      const userRepository = connection.getRepository("User");
+      const users = await userRepository.find();
+      expect(users).toHaveLength(1);
+      const storedPassword = users[0].password;
+      console.log("hashed password ->", storedPassword);
+      expect(storedPassword).not.toBe(userData.password);
+      expect(storedPassword).toMatch(/^\$2b\$10\$[\w./]+$/);
+      expect(await bcrypt.compare(userData.password, storedPassword)).toBe(
+        true,
+      );
     });
   });
 });
