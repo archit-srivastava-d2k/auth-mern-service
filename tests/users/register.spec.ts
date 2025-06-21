@@ -2,7 +2,7 @@ import request from "supertest";
 import app from "../../src/app";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
-import { truncateTables } from "../utils";
+import { Roles } from "../../src/constants";
 
 describe("POST auth/register", () => {
   let connection: DataSource;
@@ -12,7 +12,8 @@ describe("POST auth/register", () => {
 
   beforeEach(async () => {
     // Clear the database before each test
-    await truncateTables(connection);
+    await connection.dropDatabase();
+    await connection.synchronize();
   });
 
   afterAll(async () => {
@@ -78,6 +79,20 @@ describe("POST auth/register", () => {
       );
       expect(response.body).toHaveProperty("userId");
       expect(typeof response.body.userId).toBe("number");
+    });
+
+    it("should assign the user role ", async () => {
+      const UserData = {
+        firstName: "Test",
+        lastName: "User",
+        email: "  test@example.com",
+        password: "password",
+      };
+      await request(app).post("/auth/register").send(UserData);
+      const userRePOsitory = connection.getRepository("User");
+      const user = await userRePOsitory.find();
+      expect(user[0]).toHaveProperty("role");
+      expect(user[0].role).toBe(Roles.CUSTOMER);
     });
   });
 });

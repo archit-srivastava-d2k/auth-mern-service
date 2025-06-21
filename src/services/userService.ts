@@ -3,6 +3,7 @@ import { userData } from "../types";
 import { User } from "../entity/User";
 import { Repository } from "typeorm";
 import createHttpError from "http-errors";
+import { Roles } from "../constants";
 
 export class UserService {
   constructor(private userRepository: Repository<User>) {}
@@ -12,6 +13,7 @@ export class UserService {
     lastName,
     email,
     password,
+    // Default role is 'customer'
   }: userData): Promise<User> {
     // Hash the password for security
 
@@ -21,7 +23,8 @@ export class UserService {
         firstName,
         lastName,
         email: email.trim().toLowerCase(),
-        password: password, // In a real application, you should hash the password before saving
+        password: password,
+        role: Roles.CUSTOMER, // In a real application, you should hash the password before saving
       });
       return user;
     } catch (err) {
