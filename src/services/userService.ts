@@ -13,20 +13,25 @@ export class UserService {
     lastName,
     email,
     password,
-    // Default role is 'customer'
   }: userData): Promise<User> {
-    // Hash the password for security
+    // Check if the user already exists
+    const existingUser = await this.userRepository.findOne({
+      where: { email: email.trim().toLowerCase() },
+    });
+    if (existingUser) {
+      const error = createHttpError(400, "User already exists");
+      throw error;
+    }
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Create and save the user
     try {
       const user = await this.userRepository.save({
         firstName,
         lastName,
         email: email.trim().toLowerCase(),
         password: hashedPassword,
-        role: Roles.CUSTOMER, // In a real application, you should hash the password before saving
+        role: Roles.CUSTOMER,
       });
       return user;
     } catch (err) {

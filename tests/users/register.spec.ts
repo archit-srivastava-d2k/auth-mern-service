@@ -115,5 +115,24 @@ describe("POST auth/register", () => {
         true,
       );
     });
+
+    it("should return 400 if email is already registered", async () => {
+      const userData = {
+        firstName: "Test",
+        lastName: "User",
+        email: "test@example.com",
+        password: "password",
+      };
+      const userRepository = await connection.getRepository("User");
+      await userRepository.save({ ...userData, role: Roles.CUSTOMER });
+      const users = await userRepository.find();
+
+      await request(app).post("/auth/register").send(userData);
+
+      const response = await request(app).post("/auth/register").send(userData);
+
+      expect(response.status).toBe(400);
+      expect(users).toHaveLength(1);
+    });
   });
 });
