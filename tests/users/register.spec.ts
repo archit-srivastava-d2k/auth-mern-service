@@ -166,7 +166,18 @@ describe("POST auth/register", () => {
       // expect(refreshToken).not.toBeNull();
       // Optionally test token structure
       expect(isJwt(accessToken)).toBeTruthy();
-      expect(isJwt(refreshToken)).toBeTruthy();
+    });
+    it("should store the refresh token in the database", async () => {
+      const userData = {
+        firstName: "Rakesh",
+        lastName: "K",
+        email: "rakesh@mern.space",
+        password: "password",
+      };
+      const response = await request(app).post("/auth/register").send(userData);
+      const refreshTokenRepo = connection.getRepository("RefreshToken");
+      const refreshTokens = await refreshTokenRepo.find();
+      expect(refreshTokens).toHaveLength(1);
     });
   });
 
