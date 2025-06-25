@@ -5,6 +5,7 @@ import { AppDataSource } from "../../src/config/data-source";
 import { Roles } from "../../src/constants";
 import bcrypt from "bcrypt";
 import logger from "../../src/config/logger";
+import { isJwt } from "../utils";
 describe("POST auth/register", () => {
   let connection: DataSource;
   beforeAll(async () => {
@@ -134,6 +135,39 @@ describe("POST auth/register", () => {
       expect(response.status).toBe(400);
       expect(users).toHaveLength(1);
     });
+
+    it("should return the access token and refresh token inside a cookie", async () => {
+      const userData = {
+        firstName: "Rakesh",
+        lastName: "K",
+        email: "rakesh@mern.space",
+        password: "password",
+      };
+
+      const response = await request(app).post("/auth/register").send(userData);
+
+      const cookies = response.headers["set-cookie"] || [];
+      const cookiesArray = Array.isArray(cookies) ? cookies : [cookies];
+
+      let accessToken = null;
+      let refreshToken = null;
+
+      cookiesArray.forEach((cookie) => {
+        if (cookie.startsWith("accessToken=")) {
+          accessToken = cookie.split(";")[0].split("=")[1];
+        }
+        if (cookie.startsWith("refreshToken=")) {
+          refreshToken = cookie.split(";")[0].split("=")[1];
+        }
+      });
+      console.log("Set-Cookie headers:", response.headers["set-cookie"]);
+
+      expect(accessToken).not.toBeNull();
+      // expect(refreshToken).not.toBeNull();
+      // Optionally test token structure
+      expect(isJwt(accessToken)).toBeTruthy();
+      expect(isJwt(refreshToken)).toBeTruthy();
+    });
   });
 
   describe("Given missing fields", () => {
@@ -146,6 +180,54 @@ describe("POST auth/register", () => {
       };
       const response = await request(app).post("/auth/register").send(userData);
       expect(response.status).toBe(400);
+    });
+
+    it("should return 400 if password is missing", async () => {
+      const userData = {
+        firstName: "Test",
+        lastName: "User",
+        email: "test@example.com",
+        password: "",
+      };
+      const response = await request(app).post("/auth/register").send(userData);
+      expect(response.status).toBe(400);
+    });
+
+    it("should return 400 if first name is missing", async () => {
+      const userData = {
+        firstName: "",
+        lastName: "User",
+        email: "test@example.com",
+        password: "password",
+      };
+      const response = await request(app).post("/auth/register").send(userData);
+      expect(response.status).toBe(400);
+    });
+
+    it("should return 400 if last name is missing", async () => {
+      const userData = {
+        firstName: "Test",
+        lastName: "",
+        email: "test@example.com",
+        password: "password",
+      };
+      const response = await request(app).post("/auth/register").send(userData);
+      expect(response.status).toBe(400);
+    });
+  });
+
+  describe("fields are not in the correct format", () => {
+    it("should trim the email and convert it to lowercase", async () => {
+      const userData = {
+        firstName: "Test",
+        lastName: "User",
+        email: "  taest@example.com  ",
+        password: "password",
+      };
+      const response = await request(app).post("/auth/register").send(userData);
+      const userRePOsitory = connection.getRepository("User");
+      const user = await userRePOsitory.find();
+      expect(user[0].email).toBe("taest@example.com");
     });
   });
 });
