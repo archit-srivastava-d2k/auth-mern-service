@@ -9,12 +9,20 @@ import { Request, Response, NextFunction } from "express";
 import registerValidator from "../validators/register-validator";
 import { TokenService } from "../services/TokenService";
 import { RefreshToken } from "../entity/RefreshToken";
+import loginValidator from "../validators/login-validator";
+import { CredentialService } from "../services/credentialService";
 const router = express.Router();
 const userRepository = AppDataSource.getRepository(User);
 const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
 const userService = new UserService(userRepository);
 const tokenService = new TokenService(refreshTokenRepository);
-const authController = new AuthController(userService, logger, tokenService);
+const credentialService = new CredentialService();
+const authController = new AuthController(
+  userService,
+  logger,
+  tokenService,
+  credentialService,
+);
 
 router.post(
   "/register",
@@ -22,6 +30,18 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       await authController.register(req, res, next);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+router.post(
+  "/login",
+  loginValidator,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await authController.login(req, res, next);
     } catch (error) {
       next(error);
     }
