@@ -184,7 +184,7 @@ export class AuthController {
         userId: user.id,
       });
 
-      res.status(201).json({
+      res.json({
         message: "User login successfully",
         userId: user.id,
       });
