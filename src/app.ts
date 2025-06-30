@@ -3,8 +3,9 @@ import { HttpError } from "http-errors";
 import logger from "./config/logger";
 import authRouter from "./routes/auth";
 import "reflect-metadata";
+import cookieParser from "cookie-parser";
 const app = express();
-
+app.use(cookieParser());
 app.get("/", (req, res) => {
   res.send("Hello, World!");
 });

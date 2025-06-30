@@ -138,9 +138,9 @@ describe("POST auth/register", () => {
 
     it("should return the access token and refresh token inside a cookie", async () => {
       const userData = {
-        firstName: "Rakesh",
-        lastName: "K",
-        email: "rakesh@mern.space",
+        firstName: "Test",
+        lastName: "User",
+        email: "test@example.com",
         password: "password",
       };
 
@@ -169,9 +169,9 @@ describe("POST auth/register", () => {
     });
     it("should store the refresh token in the database", async () => {
       const userData = {
-        firstName: "Rakesh",
-        lastName: "K",
-        email: "rakesh@mern.space",
+        firstName: "Test",
+        lastName: "User",
+        email: "test@example.com",
         password: "password",
       };
       const response = await request(app).post("/auth/register").send(userData);

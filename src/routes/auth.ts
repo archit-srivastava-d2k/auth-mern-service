@@ -1,5 +1,5 @@
 // router.ts
-import express from "express";
+import express, { RequestHandler } from "express";
 import { AuthController } from "../controllers/AuthController";
 import { UserService } from "../services/userService";
 import { User } from "../entity/User";
@@ -11,6 +11,8 @@ import { TokenService } from "../services/TokenService";
 import { RefreshToken } from "../entity/RefreshToken";
 import loginValidator from "../validators/login-validator";
 import { CredentialService } from "../services/credentialService";
+import authenticate from "../middlewares/authenticate";
+import { AuthRequest } from "../types";
 const router = express.Router();
 const userRepository = AppDataSource.getRepository(User);
 const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
@@ -47,5 +49,9 @@ router.post(
     }
   },
 );
+
+router.get("/self", authenticate, (req: Request, res: Response) => {
+  authController.self(req as AuthRequest, res);
+});
 
 export default router;

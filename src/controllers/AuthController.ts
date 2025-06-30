@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
-import { NextFunction, Response } from "express";
-import { RegisterRequest } from "../types";
+import { Request, NextFunction, Response } from "express";
+import { AuthRequest, RegisterRequest } from "../types";
 import { UserService } from "../services/userService";
 import { Logger } from "winston";
 import { validationResult } from "express-validator";
@@ -13,7 +13,6 @@ import { TokenService } from "../services/TokenService";
 import { create } from "domain";
 import createHttpError from "http-errors";
 import { CredentialService } from "../services/credentialService";
-
 export class AuthController {
   constructor(
     private userService: UserService,
@@ -191,5 +190,9 @@ export class AuthController {
     } catch (error) {
       next(error);
     }
+  }
+  async self(req: AuthRequest, res: Response) {
+    const user = await this.userService.findById(Number(req.auth.sub));
+    res.json(user);
   }
 }
