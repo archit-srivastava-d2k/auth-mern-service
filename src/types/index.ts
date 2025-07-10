@@ -26,3 +26,8 @@ export type AuthCookie = {
 export interface IrefreshToken {
   id: string;
 }
+
+export interface Itenant {
+  name: string;
+  address: string;
+}
