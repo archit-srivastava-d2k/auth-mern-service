@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
 import { Request, NextFunction, Response } from "express";
-import { AuthRequest, RegisterRequest } from "../types";
+import { AuthRequest, RegisterUserRequest } from "../types";
 import { UserService } from "../services/userService";
 import { Logger } from "winston";
 import { validationResult } from "express-validator";
@@ -13,6 +13,7 @@ import { TokenService } from "../services/TokenService";
 import { create } from "domain";
 import createHttpError from "http-errors";
 import { CredentialService } from "../services/credentialService";
+import { Roles } from "../constants";
 export class AuthController {
   constructor(
     private userService: UserService,
@@ -23,7 +24,7 @@ export class AuthController {
     this.userService = userService;
   }
 
-  async register(req: RegisterRequest, res: Response, next: NextFunction) {
+  async register(req: RegisterUserRequest, res: Response, next: NextFunction) {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       res.status(400).json({ errors: result.array() });
@@ -45,6 +46,7 @@ export class AuthController {
         lastName,
         email,
         password,
+        role: Roles.CUSTOMER,
       });
 
       const payload: JwtPayload = {
@@ -99,7 +101,7 @@ export class AuthController {
     }
   }
 
-  async login(req: RegisterRequest, res: Response, next: NextFunction) {
+  async login(req: RegisterUserRequest, res: Response, next: NextFunction) {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       res.status(400).json({ errors: result.array() });
@@ -130,7 +132,7 @@ export class AuthController {
     */
 
     try {
-      const user = await this.userService.findByEmail(
+      const user = await this.userService.findByEmailWithPassword(
         email.trim().toLowerCase(),
       );
       if (!user) {

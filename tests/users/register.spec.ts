@@ -106,7 +106,7 @@ describe("POST auth/register", () => {
       await request(app).post("/auth/register").send(userData);
 
       const userRepository = connection.getRepository("User");
-      const users = await userRepository.find();
+      const users = await userRepository.find({ select: ["password"] });
       expect(users).toHaveLength(1);
       const storedPassword = users[0].password;
       console.log("hashed password ->", storedPassword);
