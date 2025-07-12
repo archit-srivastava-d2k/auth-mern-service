@@ -6,6 +6,8 @@
   "scripts": {
     "test": "jest --watch --runInBand",
     "dev": "cross-env NODE_ENV=dev nodemon src/server.ts",
+    "build": "tsc",
+
     "format:fix": "prettier . --write ",
     "format:check": "prettier .",
     "lint": "eslint . --check",

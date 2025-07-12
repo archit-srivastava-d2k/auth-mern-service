@@ -51,8 +51,8 @@ describe("POST /auth/login", () => {
         ["set-cookie"]: string[];
       }
       // Assert
-      let accessToken = null;
-      let refreshToken = null;
+      let accessToken = null as string | null;
+      let refreshToken = null as string | null;
       const cookies =
         (response.headers as unknown as Headers)["set-cookie"] || [];
       cookies.forEach((cookie) => {
