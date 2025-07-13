@@ -7,7 +7,7 @@ import { Tenant } from "../entity/Tenant";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
-  host: config.DB_HOST || "localhost",
+  host: config.DB_HOST || "127.0.0.1",
   port: Number(config.DB_PORT),
   username: config.DB_USERNAME || "test",
   password: config.DB_PASSWORD || "test",

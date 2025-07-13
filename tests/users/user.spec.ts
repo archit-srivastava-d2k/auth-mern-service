@@ -23,11 +23,15 @@ describe("GET /auth/self", () => {
   });
 
   afterEach(() => {
-    jwks.stop();
+    if (jwks) {
+      jwks.stop();
+    }
   });
 
   afterAll(async () => {
-    await connection.destroy();
+    if (connection) {
+      await connection.destroy();
+    }
   });
 
   describe("Given all fields", () => {

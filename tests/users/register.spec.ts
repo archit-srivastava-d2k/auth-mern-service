@@ -18,7 +18,9 @@ describe("POST auth/register", () => {
   });
 
   afterAll(async () => {
-    await connection.destroy();
+    if (connection) {
+      await connection.destroy();
+    }
   });
 
   describe("Given all fields", () => {
