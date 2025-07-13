@@ -13,21 +13,16 @@ export class TokenService {
     // Initialization if needed
   }
   generateAccessToken(payload: JwtPayload) {
-    let privateKey: string;
-    if (!serverConfig.PRIVATE_KEY) {
-      const error = createHttpError(
-        500,
-        "Private key not found in server config",
+    let privateKey: Buffer;
+
+    try {
+      privateKey = fs.readFileSync(
+        path.join(__dirname, "../../certs/private.pem"),
       );
+    } catch (err) {
+      const error = createHttpError(500, "Error while reading private key");
       throw error;
     }
-    try {
-      privateKey = serverConfig.PRIVATE_KEY!;
-    } catch (error) {
-      const err = createHttpError(500, "Private key not found");
-      throw err;
-    }
-
     const accessToken = sign(payload, privateKey, {
       algorithm: "RS256",
       expiresIn: "1h",

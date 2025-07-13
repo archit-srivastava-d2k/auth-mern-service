@@ -12,7 +12,7 @@ import { RefreshToken } from "../entity/RefreshToken";
 import { TokenService } from "../services/TokenService";
 import { create } from "domain";
 import createHttpError from "http-errors";
-import { CredentialService } from "../services/credentialService";
+import { CredentialService } from "../services/CredentialService";
 import { Roles } from "../constants";
 export class AuthController {
   constructor(
