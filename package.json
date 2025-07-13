@@ -11,7 +11,7 @@
 
     "format:fix": "prettier . --write ",
     "format:check": "prettier .",
-    "lint": "eslint . --check",
+    "lint": "eslint . ",
     "lint:fix": "eslint . --fix",
     "prepare": "husky",
     "start": "ts-node src/index.ts",
