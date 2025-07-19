@@ -1,25 +1,19 @@
-import path from "path";
-import fs from "fs";
-import { Request, NextFunction, Response } from "express";
+import { NextFunction, Response } from "express";
 import { AuthRequest, RegisterUserRequest } from "../types";
 import { UserService } from "../services/userService";
 import { Logger } from "winston";
 import { validationResult } from "express-validator";
-import { JwtPayload, sign } from "jsonwebtoken";
-import { serverConfig } from "../config";
-import { AppDataSource } from "../config/data-source";
-import { RefreshToken } from "../entity/RefreshToken";
+import { JwtPayload } from "jsonwebtoken";
 import { TokenService } from "../services/TokenService";
-import { create } from "domain";
 import createHttpError from "http-errors";
 import { CredentialService } from "../services/CredentialService";
 import { Roles } from "../constants";
 export class AuthController {
   constructor(
-    private userService: UserService,
-    private logger: Logger,
-    private tokenService: TokenService,
-    private credentialService: CredentialService,
+    private readonly userService: UserService,
+    private readonly logger: Logger,
+    private readonly tokenService: TokenService,
+    private readonly credentialService: CredentialService,
   ) {
     this.userService = userService;
   }
@@ -55,11 +49,6 @@ export class AuthController {
       };
       const accessToken = this.tokenService.generateAccessToken(payload);
 
-      // const refreshTokenRepo = AppDataSource.getRepository(RefreshToken);
-      // const newRefreshToken = await refreshTokenRepo.save({
-      //   user: user,
-      //   expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
-      // });
       const newRefreshToken = await this.tokenService.persistRefreshToken(user);
       const refreshToken = this.tokenService.generateRefreshToken({
         ...payload,
@@ -120,16 +109,6 @@ export class AuthController {
       res.status(400).json({ message: error.message });
       return;
     }
-    /*
-    check if username(email) exists in database
-    if not, throw error
-    if yes, check if password is correct
-    if not, throw error
-    if yes, generate access token
-   Add Token to cookie
-   return to respose id
-
-    */
 
     try {
       const user = await this.userService.findByEmailWithPassword(

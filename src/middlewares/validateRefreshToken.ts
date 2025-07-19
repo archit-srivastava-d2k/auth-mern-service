@@ -27,6 +27,7 @@ export default expressjwt({
       logger.error("Error while getting the refresh token", {
         id: (token?.payload as IRefreshTokenPayload).id,
       });
+      console.error("Error while getting the refresh token", err);
     }
     return true;
   },

@@ -1,11 +1,10 @@
 // router.ts
-import express, { RequestHandler } from "express";
 import { AuthController } from "../controllers/AuthController";
 import { UserService } from "../services/userService";
 import { User } from "../entity/User";
 import { AppDataSource } from "../config/data-source";
 import logger from "../config/logger";
-import { Request, Response, NextFunction } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import registerValidator from "../validators/register-validator";
 import { TokenService } from "../services/TokenService";
 import { RefreshToken } from "../entity/RefreshToken";

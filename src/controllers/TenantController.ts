@@ -7,8 +7,8 @@ import { matchedData, validationResult } from "express-validator";
 
 export class TenantController {
   constructor(
-    private tenantService: TenantService,
-    private logger: Logger,
+    private readonly tenantService: TenantService,
+    private readonly logger: Logger,
   ) {}
 
   async create(req: CreateTenantRequest, res: Response, next: NextFunction) {
