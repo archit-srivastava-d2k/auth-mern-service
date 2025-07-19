@@ -1,16 +1,10 @@
-import path from "path";
-import fs from "fs";
-import { Request, NextFunction, Response } from "express";
+import { NextFunction, Response } from "express";
 import { AuthRequest, RegisterUserRequest } from "../types";
 import { UserService } from "../services/userService";
 import { Logger } from "winston";
 import { validationResult } from "express-validator";
-import { JwtPayload, sign } from "jsonwebtoken";
-import { serverConfig } from "../config";
-import { AppDataSource } from "../config/data-source";
-import { RefreshToken } from "../entity/RefreshToken";
+import { JwtPayload } from "jsonwebtoken";
 import { TokenService } from "../services/TokenService";
-import { create } from "domain";
 import createHttpError from "http-errors";
 import { CredentialService } from "../services/CredentialService";
 import { Roles } from "../constants";

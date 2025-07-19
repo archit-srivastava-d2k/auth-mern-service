@@ -37,6 +37,7 @@ export class UserService {
     } catch (err) {
       const error = createHttpError(500, "Error creating user");
       throw error;
+      console.error("Error creating user", err);
     }
   }
 
@@ -80,6 +81,7 @@ export class UserService {
         "Failed to update the user in the database",
       );
       throw error;
+      console.error("Failed to update the user in the database", err);
     }
   }
 
