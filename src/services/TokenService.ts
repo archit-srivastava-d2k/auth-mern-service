@@ -38,6 +38,7 @@ if (!privateKey || privateKey.length < 1000) {
       ")",
   );
 }
+const a = 6;
 if (
   !privateKey.includes("BEGIN RSA PRIVATE KEY") ||
   !privateKey.includes("END RSA PRIVATE KEY")
