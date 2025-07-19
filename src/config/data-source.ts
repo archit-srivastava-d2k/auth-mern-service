@@ -14,6 +14,12 @@ export const AppDataSource = new DataSource({
   database: config.DB_NAME || "test",
   synchronize: false, // Disable synchronization in production
   logging: false,
+  extra: {
+    family: 4,
+  },
+  ssl: {
+    rejectUnauthorized: false,
+  },
   entities: ["src/entity/*.{ts,js}"],
   migrations: ["src/migration/*.{ts,js}"],
   subscribers: [],
