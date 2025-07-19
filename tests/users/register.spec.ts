@@ -4,7 +4,6 @@ import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
 import { Roles } from "../../src/constants";
 import bcrypt from "bcrypt";
-import logger from "../../src/config/logger";
 import { isJwt } from "../utils";
 import { User } from "../../src/entity/User";
 import { RefreshToken } from "../../src/entity/RefreshToken";

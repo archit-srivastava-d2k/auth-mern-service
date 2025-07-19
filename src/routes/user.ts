@@ -18,11 +18,11 @@ const userController = new UserController(userService, logger);
 
 router.post(
   "/",
-  authenticate as RequestHandler,
+  authenticate,
   canAccess([Roles.ADMIN]),
   (req: CreateUserRequest, res: Response, next: NextFunction) =>
-    userController.create(req, res, next) as unknown as RequestHandler,
-);
+    userController.create(req, res, next),
+) as unknown as RequestHandler;
 
 router.patch(
   "/:id",
@@ -30,7 +30,7 @@ router.patch(
   canAccess([Roles.ADMIN]),
   (req: UpdateUserRequest, res: Response, next: NextFunction) =>
     userController.update(req, res, next) as unknown as RequestHandler,
-);
+) as unknown as RequestHandler;
 
 router.get(
   "/",
@@ -38,7 +38,7 @@ router.get(
   canAccess([Roles.ADMIN]),
   (req: Request, res: Response, next: NextFunction) =>
     userController.getAll(req, res, next) as unknown as RequestHandler,
-);
+) as unknown as RequestHandler;
 
 router.get(
   "/:id",
@@ -46,7 +46,7 @@ router.get(
   canAccess([Roles.ADMIN]),
   (req, res, next) =>
     userController.getOne(req, res, next) as unknown as RequestHandler,
-);
+) as unknown as RequestHandler;
 
 router.delete(
   "/:id",
@@ -54,6 +54,6 @@ router.delete(
   canAccess([Roles.ADMIN]),
   (req, res, next) =>
     userController.destroy(req, res, next) as unknown as RequestHandler,
-);
+) as unknown as RequestHandler;
 
 export default router;

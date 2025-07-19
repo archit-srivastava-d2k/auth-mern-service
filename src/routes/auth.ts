@@ -1,11 +1,15 @@
 // router.ts
-import express, { RequestHandler } from "express";
 import { AuthController } from "../controllers/AuthController";
 import { UserService } from "../services/userService";
 import { User } from "../entity/User";
 import { AppDataSource } from "../config/data-source";
 import logger from "../config/logger";
-import { Request, Response, NextFunction } from "express";
+import express, {
+  Request,
+  Response,
+  NextFunction,
+  RequestHandler,
+} from "express";
 import registerValidator from "../validators/register-validator";
 import { TokenService } from "../services/TokenService";
 import { RefreshToken } from "../entity/RefreshToken";
@@ -38,7 +42,7 @@ router.post(
       next(error);
     }
   },
-);
+) as unknown as RequestHandler;
 
 router.post(
   "/login",
@@ -50,11 +54,11 @@ router.post(
       next(error);
     }
   },
-);
+) as unknown as RequestHandler;
 
 router.get("/self", authenticate, (req: Request, res: Response) => {
   authController.self(req as AuthRequest, res);
-});
+}) as unknown as RequestHandler;
 
 router.post(
   "/refresh",
@@ -62,7 +66,7 @@ router.post(
   (req: Request, res: Response, next: NextFunction) => {
     authController.refresh(req as AuthRequest, res, next);
   },
-);
+) as unknown as RequestHandler;
 
 router.post(
   "/logout",
@@ -71,6 +75,6 @@ router.post(
   (req: Request, res: Response, next: NextFunction) => {
     authController.logout(req as AuthRequest, res, next);
   },
-);
+) as unknown as RequestHandler;
 
 export default router;
