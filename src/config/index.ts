@@ -16,6 +16,7 @@ const {
   REFRESH_TOKEN_SECRET,
   JWKS_URI,
   PRIVATE_KEY,
+  TEST_DB_CONNECTION_STRING,
 } = process.env;
 
 export const serverConfig = {
@@ -29,4 +30,5 @@ export const serverConfig = {
   REFRESH_TOKEN_SECRET,
   JWKS_URI,
   PRIVATE_KEY,
+  TEST_DB_CONNECTION_STRING,
 };
