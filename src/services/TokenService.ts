@@ -1,35 +1,70 @@
-import fs from "fs";
-import path from "path";
-import createHttpError from "http-errors";
 import { JwtPayload, sign } from "jsonwebtoken";
+import createHttpError from "http-errors";
 import { serverConfig } from "../config";
 import { User } from "../entity/User";
-import { AppDataSource } from "../config/data-source";
 import { RefreshToken } from "../entity/RefreshToken";
 import { Repository } from "typeorm";
+import fs from "fs";
+import path from "path";
+
+// Try to load from env first (for CI/GitHub secrets)
+let privateKey = process.env.PRIVATE_KEY;
+
+// Fallback to file if env is not set (for local development)
+if (!privateKey) {
+  try {
+    privateKey = fs.readFileSync(
+      path.join(__dirname, "../../certs/private.pem"),
+      "utf8", // Read as string
+    );
+    console.log("Loaded private key from file");
+  } catch (err) {
+    if (err instanceof Error) {
+      throw createHttpError(
+        500,
+        "PRIVATE_KEY not found in env or file: " + err.message,
+      );
+    }
+  }
+}
+
+// Validation: Ensure it's a valid PEM key (basic check)
+if (!privateKey || privateKey.length < 1000) {
+  // Your full key is ~1600 chars
+  throw createHttpError(
+    500,
+    "Invalid PRIVATE_KEY: Too short or truncated (length: " +
+      (privateKey ? privateKey.length : 0) +
+      ")",
+  );
+}
+if (
+  !privateKey.includes("BEGIN RSA PRIVATE KEY") ||
+  !privateKey.includes("END RSA PRIVATE KEY")
+) {
+  throw createHttpError(500, "Invalid PRIVATE_KEY: Missing PEM headers");
+}
+
+// Convert to Buffer for safe RS256 signing
+const privateKeyBuffer = Buffer.from(privateKey, "utf-8");
+
+// Debug log
+console.log("Private key loaded successfully (length:", privateKey.length, ")");
 
 export class TokenService {
   constructor(private refreshTokenRepo: Repository<RefreshToken>) {
     // Initialization if needed
   }
-  generateAccessToken(payload: JwtPayload) {
-    let privateKey: Buffer;
 
-    try {
-      privateKey = fs.readFileSync(
-        path.join(__dirname, "../../certs/private.pem"),
-      );
-    } catch (err) {
-      const error = createHttpError(500, "Error while reading private key");
-      throw error;
-    }
-    const accessToken = sign(payload, privateKey, {
+  generateAccessToken(payload: JwtPayload) {
+    const accessToken = sign(payload, privateKeyBuffer, {
       algorithm: "RS256",
       expiresIn: "1h",
       issuer: "auth-service",
     });
     return accessToken;
   }
+
   generateRefreshToken(payload: JwtPayload) {
     const refreshToken = sign(payload, serverConfig.REFRESH_TOKEN_SECRET!, {
       algorithm: "HS256",

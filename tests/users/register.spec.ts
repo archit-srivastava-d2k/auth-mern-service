@@ -6,6 +6,9 @@ import { Roles } from "../../src/constants";
 import bcrypt from "bcrypt";
 import logger from "../../src/config/logger";
 import { isJwt } from "../utils";
+import { User } from "../../src/entity/User";
+import { RefreshToken } from "../../src/entity/RefreshToken";
+
 describe("POST auth/register", () => {
   let connection: DataSource;
   beforeAll(async () => {
@@ -15,6 +18,19 @@ describe("POST auth/register", () => {
   beforeEach(async () => {
     await connection.dropDatabase();
     await connection.synchronize();
+  });
+
+  afterEach(async () => {
+    if (connection.isInitialized) {
+      // Use query builder for safe full-table delete (no criteria needed)
+      await connection
+        .createQueryBuilder()
+        .delete()
+        .from(RefreshToken)
+        .execute();
+      await connection.createQueryBuilder().delete().from(User).execute();
+      console.log("Cleaned up test data (users and refresh tokens)");
+    }
   });
 
   afterAll(async () => {
@@ -54,12 +70,12 @@ describe("POST auth/register", () => {
         password: "password",
       };
       await request(app).post("/auth/register").send(UserData);
-      const userRePOsitory = connection.getRepository("User");
-      const user = await userRePOsitory.find();
-      expect(user).toHaveLength(1);
-      expect(user[0].firstName).toBe(UserData.firstName);
-      expect(user[0].lastName).toBe(UserData.lastName);
-      expect(user[0].email).toBe(UserData.email.trim().toLowerCase());
+      const userRepository = connection.getRepository("User");
+      const users = await userRepository.find();
+      expect(users).toHaveLength(1);
+      expect(users[0].firstName).toBe(UserData.firstName);
+      expect(users[0].lastName).toBe(UserData.lastName);
+      expect(users[0].email).toBe(UserData.email.trim().toLowerCase());
     });
 
     it("should return the user ID in the response", async () => {
@@ -91,10 +107,10 @@ describe("POST auth/register", () => {
         password: "password",
       };
       await request(app).post("/auth/register").send(UserData);
-      const userRePOsitory = connection.getRepository("User");
-      const user = await userRePOsitory.find();
-      expect(user[0]).toHaveProperty("role");
-      expect(user[0].role).toBe(Roles.CUSTOMER);
+      const userRepository = connection.getRepository("User");
+      const users = await userRepository.find();
+      expect(users[0]).toHaveProperty("role");
+      expect(users[0].role).toBe(Roles.CUSTOMER);
     });
 
     it("should store the password as hashed in the database", async () => {
@@ -126,7 +142,7 @@ describe("POST auth/register", () => {
         email: "test@example.com",
         password: "password",
       };
-      const userRepository = await connection.getRepository("User");
+      const userRepository = connection.getRepository("User");
       await userRepository.save({ ...userData, role: Roles.CUSTOMER });
       const users = await userRepository.find();
 
@@ -165,7 +181,7 @@ describe("POST auth/register", () => {
       console.log("Set-Cookie headers:", response.headers["set-cookie"]);
 
       expect(accessToken).not.toBeNull();
-      // expect(refreshToken).not.toBeNull();
+      expect(refreshToken).not.toBeNull();
       // Optionally test token structure
       expect(isJwt(accessToken)).toBeTruthy();
     });
@@ -238,8 +254,8 @@ describe("POST auth/register", () => {
         password: "password",
       };
       const response = await request(app).post("/auth/register").send(userData);
-      const userRePOsitory = connection.getRepository("User");
-      const user = await userRePOsitory.find();
+      const userRepository = connection.getRepository("User");
+      const user = await userRepository.find();
       expect(user[0].email).toBe("taest@example.com");
     });
   });
