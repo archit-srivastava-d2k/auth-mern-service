@@ -53,7 +53,7 @@ const privateKeyBuffer = Buffer.from(privateKey, "utf-8");
 console.log("Private key loaded successfully (length:", privateKey.length, ")");
 
 export class TokenService {
-  constructor(private refreshTokenRepo: Repository<RefreshToken>) {
+  constructor(private readonly refreshTokenRepo: Repository<RefreshToken>) {
     // Initialization if needed
   }
 
