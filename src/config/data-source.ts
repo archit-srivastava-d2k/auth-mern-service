@@ -18,9 +18,8 @@ export const AppDataSource = new DataSource({
   extra: {
     family: 4,
   },
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  ssl: false,
+
   entities: ["src/entity/*.{ts,js}"],
   migrations: ["src/migration/*.{ts,js}"],
   subscribers: [],

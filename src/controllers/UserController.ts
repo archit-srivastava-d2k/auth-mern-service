@@ -23,11 +23,12 @@ export class UserController {
     }
 
     const { firstName, lastName, email, password, tenantId, role } = req.body;
+    const normalizedEmail = email.trim().toLowerCase();
     try {
       const user = await this.userService.create({
         firstName,
         lastName,
-        email,
+        email: normalizedEmail,
         password,
         role,
         tenantId,

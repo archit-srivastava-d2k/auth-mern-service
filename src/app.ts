@@ -5,6 +5,7 @@ import authRouter from "./routes/auth";
 import "reflect-metadata";
 import cookieParser from "cookie-parser";
 import tenantRouter from "./routes/tenant";
+import userRouter from "./routes/user";
 const app = express();
 app.use(express.static("public")); // for other files
 app.use("/.well-known", express.static("public/.well-known")); // specifically for JWKS
@@ -17,6 +18,7 @@ app.use(express.json());
 
 app.use("/auth", authRouter);
 app.use("/tenants", tenantRouter);
+app.use("/users", userRouter);
 app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
   logger.error(err.message);
   const status = err.status || 500;

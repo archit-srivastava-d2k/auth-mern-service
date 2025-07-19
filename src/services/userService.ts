@@ -13,6 +13,8 @@ export class UserService {
     lastName,
     email,
     password,
+    role,
+    tenantId,
   }: userData): Promise<User> {
     // Check if the user already exists
     const existingUser = await this.userRepository.findOne({
@@ -31,7 +33,7 @@ export class UserService {
         lastName,
         email: email.trim().toLowerCase(),
         password: hashedPassword,
-        role: Roles.CUSTOMER,
+        role,
       });
       return user;
     } catch (err) {
