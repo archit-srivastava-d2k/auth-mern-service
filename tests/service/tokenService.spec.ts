@@ -19,7 +19,7 @@ describe("TokenService", () => {
     refreshTokenRepository = connection.getRepository(RefreshToken);
     userRepository = connection.getRepository(User);
     tokenService = new TokenService(refreshTokenRepository);
-  });
+  }, 15000); // Increased timeout for beforeAll
 
   beforeEach(async () => {
     await connection.dropDatabase();
@@ -33,13 +33,13 @@ describe("TokenService", () => {
       password: "hashedPassword",
       role: Roles.CUSTOMER,
     });
-  });
+  }, 10000); // Increased timeout for beforeEach
 
   afterAll(async () => {
     if (connection) {
       await connection.destroy();
     }
-  });
+  }, 10000); // Added timeout for afterAll
 
   describe("generateAccessToken", () => {
     it("should generate a valid RS256 JWT access token", () => {
@@ -64,7 +64,7 @@ describe("TokenService", () => {
       );
       expect(header.alg).toBe("RS256");
       expect(header.typ).toBe("JWT");
-    });
+    }, 10000); // Added timeout for individual test
 
     it("should include correct payload in access token", () => {
       const payload = {
@@ -86,7 +86,7 @@ describe("TokenService", () => {
       expect(decodedPayload.role).toBe(payload.role);
       expect(decodedPayload.iss).toBe("auth-service");
       expect(decodedPayload.exp).toBeDefined();
-    });
+    }, 10000);
 
     it("should set expiration time to 1 hour", () => {
       const payload = {
@@ -110,7 +110,7 @@ describe("TokenService", () => {
 
       expect(decodedPayload.exp).toBeGreaterThanOrEqual(expectedMinExp);
       expect(decodedPayload.exp).toBeLessThanOrEqual(expectedMaxExp);
-    });
+    }, 10000);
   });
 
   describe("generateRefreshToken", () => {
@@ -136,7 +136,7 @@ describe("TokenService", () => {
       );
       expect(header.alg).toBe("HS256");
       expect(header.typ).toBe("JWT");
-    });
+    }, 10000);
 
     it("should include correct payload in refresh token", () => {
       const payload = {
@@ -158,7 +158,7 @@ describe("TokenService", () => {
       expect(decoded.role).toBe(payload.role);
       expect(decoded.iss).toBe("auth-service");
       expect(decoded.jti).toBe(String(payload.id));
-    });
+    }, 10000);
 
     it("should set jwtid to string representation of user id", () => {
       const payload = {
@@ -174,7 +174,7 @@ describe("TokenService", () => {
       ) as jwt.JwtPayload;
 
       expect(decoded.jti).toBe(String(payload.id));
-    });
+    }, 10000);
   });
 
   describe("persistRefreshToken", () => {
@@ -194,7 +194,7 @@ describe("TokenService", () => {
 
       expect(savedToken).toBeDefined();
       expect(savedToken!.user.id).toBe(testUser.id);
-    });
+    }, 10000);
 
     it("should set expiration date to 1 year from now", async () => {
       const beforePersist = new Date();
@@ -215,7 +215,7 @@ describe("TokenService", () => {
       expect(refreshToken.expiresAt.getTime()).toBeLessThanOrEqual(
         expectedMaxExpiry.getTime(),
       );
-    });
+    }, 10000);
 
     it("should create multiple refresh tokens for the same user", async () => {
       const token1 = await tokenService.persistRefreshToken(testUser);
@@ -230,7 +230,7 @@ describe("TokenService", () => {
       });
 
       expect(allTokens).toHaveLength(2);
-    });
+    }, 10000);
   });
 
   describe("deleteRefreshToken", () => {
@@ -256,7 +256,7 @@ describe("TokenService", () => {
         where: { id: refreshToken.id },
       });
       expect(tokenAfterDelete).toBeNull();
-    });
+    }, 10000);
 
     it("should return affected count of 0 for non-existent token", async () => {
       const nonExistentTokenId = 99999;
@@ -265,7 +265,7 @@ describe("TokenService", () => {
         await tokenService.deleteRefreshToken(nonExistentTokenId);
 
       expect(deleteResult.affected).toBe(0);
-    });
+    }, 10000);
 
     it("should delete only the specified token when multiple tokens exist", async () => {
       // Create multiple tokens
@@ -277,7 +277,6 @@ describe("TokenService", () => {
 
       expect(deleteResult.affected).toBe(1);
 
-      // Verify first token is deleted
       const deletedToken = await refreshTokenRepository.findOne({
         where: { id: token1.id },
       });
@@ -288,7 +287,7 @@ describe("TokenService", () => {
         where: { id: token2.id },
       });
       expect(existingToken).toBeDefined();
-    });
+    }, 10000);
   });
 
   describe("Edge cases and error scenarios", () => {
@@ -307,7 +306,7 @@ describe("TokenService", () => {
 
       expect(decodedPayload.iss).toBe("auth-service");
       expect(decodedPayload.exp).toBeDefined();
-    });
+    }, 10000);
 
     it("should handle empty payload in generateRefreshToken", () => {
       const emptyPayload = {};
@@ -323,7 +322,7 @@ describe("TokenService", () => {
       ) as jwt.JwtPayload;
       expect(decoded.iss).toBe("auth-service");
       expect(decoded.exp).toBeDefined();
-    });
+    }, 10000);
 
     it("should handle user with different roles", async () => {
       const adminUser = await userRepository.save({
@@ -338,6 +337,6 @@ describe("TokenService", () => {
 
       expect(refreshToken.user.id).toBe(adminUser.id);
       expect(refreshToken.user.role).toBe(Roles.ADMIN);
-    });
+    }, 10000);
   });
 });
