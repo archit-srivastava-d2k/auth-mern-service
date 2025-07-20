@@ -277,7 +277,6 @@ describe("TokenService", () => {
 
       expect(deleteResult.affected).toBe(1);
 
-      // Verify first token is deleted
       const deletedToken = await refreshTokenRepository.findOne({
         where: { id: token1.id },
       });
