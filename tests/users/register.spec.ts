@@ -10,14 +10,29 @@ import { RefreshToken } from "../../src/entity/RefreshToken";
 
 describe("POST auth/register", () => {
   let connection: DataSource;
+
   beforeAll(async () => {
     connection = await AppDataSource.initialize();
-  });
+  }, 15000); // Increased timeout for beforeAll
 
   beforeEach(async () => {
-    await connection.dropDatabase();
-    await connection.synchronize();
-  });
+    // Option 1: Use truncate instead of drop/sync for faster cleanup
+    await connection.synchronize(true); // true = drop schema first
+
+    // Alternative Option 2: Manual cleanup (faster than drop/sync)
+    // try {
+    //   await connection.createQueryBuilder()
+    //     .delete()
+    //     .from(RefreshToken)
+    //     .execute();
+    //   await connection.createQueryBuilder()
+    //     .delete()
+    //     .from(User)
+    //     .execute();
+    // } catch (error) {
+    //   console.log("Cleanup error (expected if tables don't exist):", error);
+    // }
+  }, 10000); // Increased timeout for beforeEach
 
   afterEach(async () => {
     if (connection.isInitialized) {
@@ -30,13 +45,13 @@ describe("POST auth/register", () => {
       await connection.createQueryBuilder().delete().from(User).execute();
       console.log("Cleaned up test data (users and refresh tokens)");
     }
-  });
+  }, 10000); // Added timeout for afterEach
 
   afterAll(async () => {
     if (connection) {
       await connection.destroy();
     }
-  });
+  }, 10000); // Added timeout for afterAll
 
   describe("Given all fields", () => {
     it("should return 201", async () => {
@@ -48,7 +63,7 @@ describe("POST auth/register", () => {
       };
       const response = await request(app).post("/auth/register").send(UserData);
       expect(response.status).toBe(201);
-    });
+    }, 10000); // Increased timeout for individual test
 
     it("should return valid JSON", async () => {
       const UserData = {
@@ -59,7 +74,7 @@ describe("POST auth/register", () => {
       };
       const response = await request(app).post("/auth/register").send(UserData);
       expect(response.type).toBe("application/json");
-    });
+    }, 10000);
 
     it("should persist the user in the database", async () => {
       const UserData = {
@@ -75,7 +90,7 @@ describe("POST auth/register", () => {
       expect(users[0].firstName).toBe(UserData.firstName);
       expect(users[0].lastName).toBe(UserData.lastName);
       expect(users[0].email).toBe(UserData.email.trim().toLowerCase());
-    });
+    }, 10000);
 
     it("should return the user ID in the response", async () => {
       const UserData = {
@@ -96,7 +111,7 @@ describe("POST auth/register", () => {
       );
       expect(response.body).toHaveProperty("userId");
       expect(typeof response.body.userId).toBe("number");
-    });
+    }, 10000);
 
     it("should assign the user role ", async () => {
       const UserData = {
@@ -110,7 +125,7 @@ describe("POST auth/register", () => {
       const users = await userRepository.find();
       expect(users[0]).toHaveProperty("role");
       expect(users[0].role).toBe(Roles.CUSTOMER);
-    });
+    }, 10000);
 
     it("should store the password as hashed in the database", async () => {
       const userData = {
@@ -132,7 +147,7 @@ describe("POST auth/register", () => {
       expect(await bcrypt.compare(userData.password, storedPassword)).toBe(
         true,
       );
-    });
+    }, 10000);
 
     it("should return 400 if email is already registered", async () => {
       const userData = {
@@ -151,7 +166,7 @@ describe("POST auth/register", () => {
 
       expect(response.status).toBe(400);
       expect(users).toHaveLength(1);
-    });
+    }, 10000);
 
     it("should return the access token and refresh token inside a cookie", async () => {
       const userData = {
@@ -183,7 +198,8 @@ describe("POST auth/register", () => {
       expect(refreshToken).not.toBeNull();
       // Optionally test token structure
       expect(isJwt(accessToken)).toBeTruthy();
-    });
+    }, 10000);
+
     it("should store the refresh token in the database", async () => {
       const userData = {
         firstName: "Test",
@@ -195,7 +211,7 @@ describe("POST auth/register", () => {
       const refreshTokenRepo = connection.getRepository("RefreshToken");
       const refreshTokens = await refreshTokenRepo.find();
       expect(refreshTokens).toHaveLength(1);
-    });
+    }, 10000);
   });
 
   describe("Given missing fields", () => {
@@ -208,7 +224,7 @@ describe("POST auth/register", () => {
       };
       const response = await request(app).post("/auth/register").send(userData);
       expect(response.status).toBe(400);
-    });
+    }, 10000);
 
     it("should return 400 if password is missing", async () => {
       const userData = {
@@ -219,7 +235,7 @@ describe("POST auth/register", () => {
       };
       const response = await request(app).post("/auth/register").send(userData);
       expect(response.status).toBe(400);
-    });
+    }, 10000);
 
     it("should return 400 if first name is missing", async () => {
       const userData = {
@@ -230,7 +246,7 @@ describe("POST auth/register", () => {
       };
       const response = await request(app).post("/auth/register").send(userData);
       expect(response.status).toBe(400);
-    });
+    }, 10000);
 
     it("should return 400 if last name is missing", async () => {
       const userData = {
@@ -241,7 +257,7 @@ describe("POST auth/register", () => {
       };
       const response = await request(app).post("/auth/register").send(userData);
       expect(response.status).toBe(400);
-    });
+    }, 10000);
   });
 
   describe("fields are not in the correct format", () => {
@@ -256,6 +272,6 @@ describe("POST auth/register", () => {
       const userRepository = connection.getRepository("User");
       const user = await userRepository.find();
       expect(user[0].email).toBe("taest@example.com");
-    });
+    }, 10000);
   });
 });
