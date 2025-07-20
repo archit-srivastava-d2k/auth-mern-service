@@ -15,7 +15,7 @@ if (!privateKey) {
   try {
     privateKey = fs.readFileSync(
       path.join(__dirname, "../../certs/private.pem"),
-      "utf8", // Read as string
+      "utf8",
     );
     console.log("Loaded private key from file");
   } catch (err) {
@@ -28,25 +28,12 @@ if (!privateKey) {
   }
 }
 
-// Validation: Ensure it's a valid PEM key (basic check)
-if (!privateKey || privateKey.length < 1000) {
-  // Your full key is ~1600 chars
+if (!privateKey) {
   throw createHttpError(
     500,
-    "Invalid PRIVATE_KEY: Too short or truncated (length: " +
-      (privateKey ? privateKey.length : 0) +
-      ")",
+    "PRIVATE_KEY is undefined after loading attempts.",
   );
 }
-
-if (
-  !privateKey.includes("BEGIN RSA PRIVATE KEY") ||
-  !privateKey.includes("END RSA PRIVATE KEY")
-) {
-  throw createHttpError(500, "Invalid PRIVATE_KEY: Missing PEM headers");
-}
-
-// Convert to Buffer for safe RS256 signing
 const privateKeyBuffer = Buffer.from(privateKey, "utf-8");
 
 // Debug log
