@@ -4,7 +4,7 @@ import { User } from "../entity/User";
 import { Brackets, Repository } from "typeorm";
 import createHttpError from "http-errors";
 import { Roles } from "../constants";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 export class UserService {
   constructor(private readonly userRepository: Repository<User>) {}
 
