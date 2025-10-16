@@ -60,7 +60,7 @@ export class TokenService {
   generateAccessToken(payload: JwtPayload) {
     const accessToken = sign(payload, privateKeyBuffer, {
       algorithm: "RS256",
-      expiresIn: "1h",
+      expiresIn: "1m",
       issuer: "auth-service",
     });
     return accessToken;
